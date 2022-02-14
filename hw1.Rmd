@@ -19,7 +19,17 @@ library(ggrepel)
 ```{r}
 transit_cost <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-05/transit_cost.csv')
 
-transit_cost <- tidytuesdayR::tt_load(2021, week = 2)
+transit_cost <- tidytuesdayR::tt_load(2021, week = 2) # think we only need one of these
+
+# first read in the data
+d <- readr::read_csv(here::here("data", "crime.csv"))
+
+# write it out as a parquet file
+arrow::write_parquet(d, here::here("data", "crime.parquet"))
+
+# read it in again
+crime <- arrow::read_parquet(here::here("data", "crime.parquet"))
+
 ```
 
 
