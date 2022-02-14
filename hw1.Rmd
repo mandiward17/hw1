@@ -19,8 +19,6 @@ library(ggrepel)
 ```{r}
 transit_cost <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-05/transit_cost.csv')
 
-transit_cost <- tidytuesdayR::tt_load(2021, week = 2) # think we only need one of these
-
 # first read in the data
 d <- readr::read_csv(here::here("data", "crime.csv"))
 
@@ -29,12 +27,49 @@ arrow::write_parquet(d, here::here("data", "crime.parquet"))
 
 # read it in again
 crime <- arrow::read_parquet(here::here("data", "crime.parquet"))
-
 ```
 
+## Question 1
+```{r}
+country_codes <- countrycode::codelist %>% 
+  select(country_name = country.name.en, country = ecb)
 
 
+transit_cost$real_cost <- as.double(transit_cost$real_cost) # convert chr to dbl
 
+df <- merge(x = transit_cost, y = country_codes,
+           by = "country", all = TRUE)                 ## merged datasets
 
+df <- df[df$country %in% names(which(table(
+  df$country)>=3)), ]                            ## removed occurrences > 3
 
+q1 <- df %>% 
+  group_by(country_name) %>% 
+  summarise(mean = mean(real_cost),
+            sd = sd(real_cost),
+            se = sd / sqrt(34))  # double check this is 34; prob another way to do
 
+q1 %>% 
+  filter(country_name != "NA") %>% 
+  mutate(country_name = fct_reorder(country_name, mean)) %>% 
+  ggplot(aes(mean, country_name)) +
+  geom_point(color = "cornflowerblue") +
+  geom_errorbarh(aes(xmin = mean - se, xmax = mean + se)) +
+  xlim(0, 30000) +
+  theme_minimal() +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_line(color = "gray85"),
+        axis.title.x = element_text(face = "bold", size = 12),
+        axis.title.y = element_text(face = "bold", size = 12),
+        plot.title = element_text(hjust = -.45, size = 14),
+        plot.caption = element_text(hjust = .5, size = 10)) +
+  labs(x = "Real Cost (In millions of dollars)",
+       y = "Country",
+       title = "Cost to build transit systems vary across countries",
+       caption = "Data provided through #tidytuesday by the Transit Costs Project")
+
+## need to take a relook at the math I did for SE, remove vertical parts on error
+## bars, and make the blue dot solid over the horiz. line. Also aspect ratio should
+## be smaller on x-axis
+```
