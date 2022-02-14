@@ -13,6 +13,7 @@ library(gghighlight)
 library(tidytuesdayR)
 library(ggplot2)
 library(ggrepel)
+library(ggtext)
 ```
 
 ## Reading in the data
@@ -26,7 +27,8 @@ d <- readr::read_csv(here::here("data", "crime.csv"))
 arrow::write_parquet(d, here::here("data", "crime.parquet"))
 
 # read it in again
-crime <- arrow::read_parquet(here::here("data", "crime.parquet"))
+crime <- arrow::read_parquet(here::here("data", "crime.parquet")) %>% 
+  janitor::clean_names()
 ```
 
 ## Question 1
@@ -73,3 +75,51 @@ q1 %>%
 ## and make the blue dot solid over the horiz. line. Also aspect ratio should
 ## be smaller on x-axis
 ```
+
+## Question 5
+*__Seemed WAY to easy to do once I understood what the actual question was. Need to check and make sure I actually completed all parts of the question. Data Viz looks correct, just need to make sure it shows correct data. __*
+```{r}
+model_data <- crime %>% 
+  mutate(neighborhood_id = relevel(factor(neighborhood_id), ref = "barnum"))
+
+m <- glm(is_crime ~ neighborhood_id, 
+         data = model_data,
+         family = "binomial")
+
+tidied <- broom::tidy(m)
+```
+
+```{r}
+barnum_west <- tidied %>% 
+  filter(term == "neighborhood_idbarnum-west")
+
+barnum_west1 <- data.frame(
+   x = qnorm(ppoints(16),
+       mean = barnum_west$estimate,
+       sd = barnum_west$std.error)
+ ) %>% 
+   mutate(less_crime = ifelse(x<=0, 
+                              "#866892", 
+                              "#24A981"))
+
+ggplot(barnum_west1, aes(x)) +
+  theme_minimal() +
+  geom_dotplot(aes(fill = less_crime), 
+               binwidth = 0.035) +
+  scale_fill_identity(guide = "none") +
+  geom_vline(xintercept = 0.000,
+             color = "red",
+             size = 1.5) +
+  scale_y_continuous(name = "",
+                     breaks = NULL
+) +
+  scale_x_continuous(name = "Difference in log odds of a crime being committed") +
+  labs(title = "Probability of differential crime rates between neighborhoods",
+        subtitle = "<span style = 'color: #866892'>**Barnum West**</span> compared to <span style = 'color: #24A981'>**Barnum**</span>",
+       caption = "Each ball represents 5% probability") +
+  theme(plot.subtitle = element_markdown())
+```
+
+
+
+
