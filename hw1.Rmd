@@ -54,7 +54,7 @@ q1 %>%
   mutate(country_name = fct_reorder(country_name, mean)) %>% 
   ggplot(aes(mean, country_name)) +
   geom_point(color = "cornflowerblue") +
-  geom_errorbarh(aes(xmin = mean - se, xmax = mean + se)) +
+  geom_linerange(aes(xmin = mean - se, xmax = mean + se)) +
   xlim(0, 30000) +
   theme_minimal() +
   theme(panel.grid.major.y = element_blank(),
@@ -69,7 +69,7 @@ q1 %>%
        title = "Cost to build transit systems vary across countries",
        caption = "Data provided through #tidytuesday by the Transit Costs Project")
 
-## need to take a relook at the math I did for SE, remove vertical parts on error
-## bars, and make the blue dot solid over the horiz. line. Also aspect ratio should
+## need to take a relook at the math I did for SE
+## and make the blue dot solid over the horiz. line. Also aspect ratio should
 ## be smaller on x-axis
 ```
