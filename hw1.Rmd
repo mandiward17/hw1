@@ -11,6 +11,7 @@ install.packages("tidytuesdayR")
 library(tidyverse)
 library(gghighlight)
 library(tidytuesdayR)
+library(scales)
 library(ggplot2)
 library(ggrepel)
 library(ggtext)
@@ -49,15 +50,15 @@ q1 <- df %>%
   group_by(country_name) %>% 
   summarise(mean = mean(real_cost),
             sd = sd(real_cost),
-            se = sd / sqrt(34))  # double check this is 34; prob another way to do
+            se = sd / sqrt(n()))  # double check this is 34; prob another way to do
 
 q1 %>% 
   filter(country_name != "NA") %>% 
   mutate(country_name = fct_reorder(country_name, mean)) %>% 
   ggplot(aes(mean, country_name)) +
+  geom_linerange(aes(xmin = mean - se, xmax = mean + se), color = "grey40") +
   geom_point(color = "cornflowerblue") +
-  geom_linerange(aes(xmin = mean - se, xmax = mean + se)) +
-  xlim(0, 30000) +
+  scale_x_continuous(labels = comma, limits = c(0, 33000), expand = c(0, 0)) +
   theme_minimal() +
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.x = element_blank(),
@@ -72,8 +73,7 @@ q1 %>%
        caption = "Data provided through #tidytuesday by the Transit Costs Project")
 
 ## need to take a relook at the math I did for SE
-## and make the blue dot solid over the horiz. line. Also aspect ratio should
-## be smaller on x-axis
+## Also aspect ratio should be smaller on x-axis
 ```
 
 ## Question 5
