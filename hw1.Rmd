@@ -84,9 +84,9 @@ err <- q1 %>%
   ggplot(aes(mean, country_name)) +
     geom_errorbarh(aes(xmin = mean - 2.58 * se, xmax = mean + 2.58 * se,
                  color = "99%"), width = 0.2, size = 0.8) + # 99% CI
-  geom_errorbarh(aes(xmin = mean - 1.96 * se, xmax = mean + 1.96 * se,
+    geom_errorbarh(aes(xmin = mean - 1.96 * se, xmax = mean + 1.96 * se,
                  color = "95%"), width = 0.2, size = 1.2) +  # 95% CI
-  geom_errorbarh(aes(xmin = mean - 1.65 * se, xmax = mean + 1.65 * se,
+    geom_errorbarh(aes(xmin = mean - 1.65 * se, xmax = mean + 1.65 * se,
                  color = "90%"), width = 0.2, size = 1.6) +   # 90% CI
   geom_point() +
   scale_x_continuous(labels = comma, limits = c(0, 35000), expand = c(0, 0)) +
@@ -112,6 +112,41 @@ err +
 # just missing a few country's lines for some reason. Need to extend x-axis?
 # it has something to do with the width in geom_errorbarh()
 ```
+
+
+*Zach trying to fix error bars*
+```{r}
+q1 %>% 
+  filter(country_name != "NA") %>% 
+  mutate(country_name = fct_reorder(country_name, mean)) %>% 
+  ggplot(aes(mean, country_name)) +
+  geom_linerange(aes(xmin = mean - 1.96 * se, xmax = mean + 1.96 * se),
+                 color = "grey40") +
+  geom_point(color = "cornflowerblue") +
+  scale_x_continuous(labels = comma, expand = c(0, 0)) +
+  coord_cartesian(xlim = c(0, 35000)) + # this is what I added! I took away the limits = in scale_x_continuous
+  theme_minimal() +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_line(color = "gray85"),
+        axis.title.x = element_text(face = "bold", size = 12),
+        axis.title.y = element_text(face = "bold", size = 12),
+        plot.title = element_text(hjust = -.45, size = 14),
+        plot.caption = element_text(hjust = .5, size = 10)) +
+  labs(x = "Real Cost (In millions of dollars)",
+       y = "Country",
+       title = "Cost to build transit systems vary across countries",
+       caption = "Data provided through #tidytuesday by the Transit Costs Project")
+
+## some data missing error bars (look at France for example)
+## above comment has something to do with the width of the geom_linerange
+## Also aspect ratio should be smaller on x-axis
+```
+
+```{r}
+
+```
+
 
 ## Question 5
 *__Seemed WAY to easy to do once I understood what the actual question was. Need to check and make sure I actually completed all parts of the question. Data Viz looks correct, just need to make sure it shows correct data. __*
