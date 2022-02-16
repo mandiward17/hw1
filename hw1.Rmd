@@ -21,10 +21,10 @@ library(ggtext)
 transit_cost <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-05/transit_cost.csv')
 
 # first read in the data
-d <- readr::read_csv(here::here("data", "crime.csv"))
+#d <- readr::read_csv(here::here("data", "crime.csv"))
 
 # write it out as a parquet file
-arrow::write_parquet(d, here::here("data", "crime.parquet"))
+#arrow::write_parquet(d, here::here("data", "crime.parquet"))
 
 # read it in again
 crime <- arrow::read_parquet(here::here("data", "crime.parquet")) %>% 
@@ -109,6 +109,46 @@ err +
                      values = c("#50af5b",
                                 lighten("#50af5b", .5),
                                 lighten("#50af5b", .8)))
+```
+
+## Question 3
+```{r}
+df1 <- df  %>%
+   group_by(country_name, city, length, real_cost, stations)  #created new dataset with select varaibles 
+
+df2 <- df1 %>% 
+   summarise(mean_length = mean(length), 
+             mean_realcost = mean(real_cost))  #computed mean of varaibles
+
+df2 %>% 
+ggplot(aes(mean_length, mean_realcost)) +
+  geom_point(color = "gray80") +
+  geom_point(data = filter(df2, str_detect(country_name, "India")),
+               color = "purple") +
+  #scale_color_manual("Number of transit systems", values = c("purple")) +
+  scale_x_log10() +
+  #ylim(c(30000, 90000)) +
+  scale_y_log10(labels = scales::dollar) +
+  theme(
+    legend.title = element_text("Number of transit systems"),
+    legend.position = "bottom",
+    legend.box.background = element_rect(colour = "black"),
+    legend.box.margin = margin(t = -0.5, unit = "cm")
+  ) +
+  scale_size_binned(breaks = c(5, 10, 20)) +
+  #gghighlight(mean_length > 5 | mean_length < 100) +
+  geom_text_repel(aes(label = city),
+                  #data = subset_cities,
+                  min.segment.length = 0, 
+                  box.padding = 0.75) +
+  labs(title = "Longer transit systems tend to cost more",
+         subtitle = "<span style = 'color: purple'>**India**</span> has among the most transit systems in the world",
+         x = "Average length",
+         y = "Average cost") +
+  theme(plot.subtitle = ggtext::element_markdown()) 
+
+##currently working on getting correct country labels, fixing y axis scale, getting the legend to show up, and to highlight correct countries. 
+
 ```
 
 ## Question 5
