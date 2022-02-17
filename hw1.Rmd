@@ -71,8 +71,6 @@ q1 %>%
        y = "Country",
        title = "Cost to build transit systems vary across countries",
        caption = "Data provided through #tidytuesday by the Transit Costs Project")
-
-## Aspect ratio should be smaller on x-axis
 ```
 
 ## Question 2
@@ -152,7 +150,6 @@ ggplot(aes(mean_length, mean_realcost)) +
 ```
 
 ## Question 5
-*__Seemed WAY to easy to do once I understood what the actual question was. Need to check and make sure I actually completed all parts of the question. Data Viz looks correct, just need to make sure it shows correct data. __*
 ```{r}
 model_data <- crime %>% 
   mutate(neighborhood_id = relevel(factor(neighborhood_id), ref = "barnum"))
