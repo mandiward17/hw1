@@ -111,32 +111,42 @@ err +
 
 ## Question 3
 ```{r}
-df1 <- df  %>%
-   group_by(country_name, city, length, real_cost, stations)  #created new dataset with select varaibles 
+df1 <- transit_cost  %>%
+   group_by(country, city)   #created new dataset with select varaibles 
+
+to_label <- c("Ahmadabad", "Bangalore", "Chennai", "Delhi", "Gurgaon", "Hyderabad","Kochi", "Nagpur")
 
 df2 <- df1 %>% 
+  group_by(city, country) %>% 
    summarise(mean_length = mean(length), 
-             mean_realcost = mean(real_cost))  #computed mean of varaibles
+             mean_realcost = mean((real_cost)), 
+             n = n()) #computed mean of varaibles
+
+subset_cities <- df2 %>%
+    filter(city %in% to_label)
 
 df2 %>% 
 ggplot(aes(mean_length, mean_realcost)) +
-  geom_point(color = "gray80") +
-  geom_point(data = filter(df2, str_detect(country_name, "India")),
-               color = "purple") +
-  #scale_color_manual("Number of transit systems", values = c("purple")) +
+  geom_point(aes(size = n), color = "gray80") +
+  geom_point(
+    aes(size = n),
+    data = filter(df2, str_detect(country, "IN")),
+    color = "#9800b3"
+  ) +
   scale_x_log10() +
-  #ylim(c(30000, 90000)) +
   scale_y_log10(labels = scales::dollar) +
   theme(
-    legend.title = element_text("Number of transit systems"),
+    #legend.title = element_text("Number of transit systems"),
     legend.position = "bottom",
-    legend.box.background = element_rect(colour = "black"),
-    legend.box.margin = margin(t = -0.5, unit = "cm")
+    legend.box.background = element_rect(color = NA)
+    #legend.box.margin = margin(t = -0.5, unit = "cm")
   ) +
-  scale_size_binned(breaks = c(5, 10, 20)) +
-  #gghighlight(mean_length > 5 | mean_length < 100) +
+  scale_size_binned(
+    name = "Number of transit systems", 
+    breaks = c(5, 10, 20)
+  ) +
   geom_text_repel(aes(label = city),
-                  #data = subset_cities,
+                  data = subset_cities,
                   min.segment.length = 0, 
                   box.padding = 0.75) +
   labs(title = "Longer transit systems tend to cost more",
@@ -144,8 +154,6 @@ ggplot(aes(mean_length, mean_realcost)) +
          x = "Average length",
          y = "Average cost") +
   theme(plot.subtitle = ggtext::element_markdown()) 
-
-##currently working on getting correct country labels, fixing y axis scale, getting the legend to show up, and to highlight correct countries. 
 
 ```
 
