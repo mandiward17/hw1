@@ -64,9 +64,11 @@ q1 %>%
         panel.grid.minor.x = element_blank(),
         panel.grid.major.x = element_line(color = "gray85"),
         axis.title.x = element_text(face = "bold", size = 12),
+        axis.text.y = element_text(size = 11),
+        axis.text.x = element_text(size = 11),
         axis.title.y = element_text(face = "bold", size = 12),
-        plot.title = element_text(hjust = -.45, size = 14),
-        plot.caption = element_text(hjust = .5, size = 10)) +
+        plot.title = element_text(hjust = -.5, size = 14),
+        plot.caption = element_text(hjust = .5, size = 11)) +
   labs(x = "Real Cost (In millions of dollars)",
        y = "Country",
        title = "Cost to build transit systems vary across countries",
