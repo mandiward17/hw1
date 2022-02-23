@@ -14,6 +14,8 @@ library(colorspace)
 library(ggplot2)
 library(ggrepel)
 library(ggtext)
+library(ggforce)
+library(geomtextpath)
 ```
 
 ## Reading in the data
@@ -157,6 +159,57 @@ ggplot(aes(mean_length, mean_realcost)) +
          y = "Average cost") +
   theme(plot.subtitle = ggtext::element_markdown()) 
 
+```
+
+## Question 4
+```{r}
+df1 <- transit_cost  %>%
+   group_by(country, city)   #created new dataset with select varaibles 
+
+to_label_1 <- c("Boston", "Los Angelas", "New York", "San Francisco", "San Jose", "Seattle")
+
+df2 <- df1 %>% 
+  group_by(city, country) %>% 
+   summarise(mean_length = mean(length), 
+             mean_realcost = mean((real_cost)), 
+             n = n()) #computed mean of varaibles
+
+subset_cities_2 <- df2 %>%
+    filter(city %in% to_label_1)
+
+df2 %>% 
+ggplot(aes(mean_length, mean_realcost)) +
+  geom_mark_ellipse(aes(group = city, label = "United States"),
+                    data = filter(subset_cities_2)) +
+                    #country == "United States")) + 
+  geom_point(aes(size = n), color = "gray80") +
+  geom_point(
+    aes(size = n),
+    data = filter(df2, str_detect(country, "US")),
+    color = "#2d81ae"
+  ) +
+  geom_label_repel(aes(label = city), 
+                   data = subset_cities_2
+                   ) +
+  scale_x_log10() +
+  scale_y_log10(labels = scales::dollar) +
+  theme(
+    legend.position = "bottom",
+    legend.box.background = element_rect(color = NA)
+  ) +
+  scale_size_binned(
+    name = "Number of transit systems", 
+    breaks = c(5, 10, 20)
+  ) +
+  #geom_text_repel(aes(label = city),
+                 # data = subset_cities_2,
+                  #min.segment.length = 0, 
+                  #box.padding = 0.75) +
+  labs(title = "Longer transit systems tend to cost more",
+         x = "Average length",
+         y = "Average cost") +
+  theme(plot.subtitle = ggtext::element_markdown()) 
+  
 ```
 
 ## Question 5
