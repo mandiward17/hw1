@@ -16,6 +16,7 @@ library(ggrepel)
 library(ggtext)
 library(ggforce)
 library(geomtextpath)
+theme_set(theme_minimal())
 ```
 
 ## Reading in the data
@@ -163,13 +164,13 @@ ggplot(aes(mean_length, mean_realcost)) +
 
 ## Question 4
 ```{r}
-df1 <- transit_cost  %>%
-   group_by(country, city)   #created new dataset with select varaibles 
+df0 <- df  %>%
+   group_by(country_name, city)   #created new dataset with select varaibles 
 
-to_label_1 <- c("Boston", "Los Angelas", "New York", "San Francisco", "San Jose", "Seattle")
+to_label_1 <- c("Boston", "Los Angeles", "New York", "San Francisco", "San Jose", "Seattle")
 
-df2 <- df1 %>% 
-  group_by(city, country) %>% 
+df2 <- df0 %>% 
+  group_by(city, country_name) %>% 
    summarise(mean_length = mean(length), 
              mean_realcost = mean((real_cost)), 
              n = n()) #computed mean of varaibles
@@ -179,17 +180,27 @@ subset_cities_2 <- df2 %>%
 
 df2 %>% 
 ggplot(aes(mean_length, mean_realcost)) +
-  geom_mark_ellipse(aes(group = city, label = "United States"),
-                    data = filter(subset_cities_2)) +
-                    #country == "United States")) + 
+  geom_mark_ellipse(aes(group = country_name, label = country_name),
+                    expand = unit(1, "mm"), 
+                    color = "pink",
+                    label.colour = "#569FD1",
+                    con.colour = "pink",
+                    data = filter(df2, country_name == "United States")
+                    ) +
+                      #data = df2 %>% 
+                      #filter(country_name == "United States"), 
+                     # aes(color = city, label = country_name), 
+                     # expand = unit(0.5, "mm")) +
   geom_point(aes(size = n), color = "gray80") +
   geom_point(
     aes(size = n),
-    data = filter(df2, str_detect(country, "US")),
-    color = "#2d81ae"
+    data = filter(df2, str_detect(country_name, "United States")),
+    color = "#2d81ae", alpha = .5
   ) +
   geom_label_repel(aes(label = city), 
-                   data = subset_cities_2
+                   data = subset_cities_2, 
+                   alpha = .5, 
+                   min.segment.length = 0
                    ) +
   scale_x_log10() +
   scale_y_log10(labels = scales::dollar) +
@@ -201,10 +212,6 @@ ggplot(aes(mean_length, mean_realcost)) +
     name = "Number of transit systems", 
     breaks = c(5, 10, 20)
   ) +
-  #geom_text_repel(aes(label = city),
-                 # data = subset_cities_2,
-                  #min.segment.length = 0, 
-                  #box.padding = 0.75) +
   labs(title = "Longer transit systems tend to cost more",
          x = "Average length",
          y = "Average cost") +
