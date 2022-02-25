@@ -1,7 +1,7 @@
 ---
 title: "hw1"
 author: "Mandi Ward, Zach Farley & Esme Castro"
-date: "2/14/2022"
+date: "2/30/2022"
 output: html_document
 ---
 
@@ -66,11 +66,12 @@ q1 %>%
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.x = element_blank(),
         panel.grid.major.x = element_line(color = "gray85"),
-        axis.title.x = element_text(face = "bold", size = 12),
-        axis.text.y = element_text(size = 11),
-        axis.text.x = element_text(size = 11),
-        axis.title.y = element_text(face = "bold", size = 12),
-        plot.title = element_text(hjust = -.5, size = 14),
+        axis.title.x = element_text(face = "bold", size = 14),
+        axis.text.y = element_text(size = 10),
+        axis.text.x = element_text(size = 10),
+        axis.title.y = element_text(face = "bold", size = 14),
+        plot.title = element_text(face = "bold", hjust = -.35,
+                                  size = 16),
         plot.caption = element_text(hjust = .5, size = 11)) +
   labs(x = "Real Cost (In millions of dollars)",
        y = "Country",
@@ -96,10 +97,11 @@ err <- q1 %>%
   theme_minimal() +
   theme(panel.grid.major.y = element_blank(),
         panel.grid.major.x = element_line(color = "gray85"),
-        axis.title.x = element_text(face = "bold", size = 12),
-        axis.title.y = element_text(face = "bold", size = 12),
-        plot.title = element_text(hjust = -.45, size = 14),
-        plot.subtitle = element_text(hjust = -.16),
+        axis.title.x = element_text(face = "bold", size = 14),
+        axis.title.y = element_text(face = "bold", size = 14),
+        plot.title = element_text(face = "bold", hjust = -.45,
+                                  size = 16),
+        plot.subtitle = element_text(hjust = -.18),
         plot.caption = element_text(hjust = .5, size = 10)) +
   labs(x = "Real Cost (In millions of dollars)",
        y = "Country",
@@ -117,9 +119,9 @@ err +
 ## Question 3
 ```{r}
 df1 <- transit_cost  %>%
-   group_by(country, city)   #created new dataset with select varaibles 
+   group_by(country, city)   #created new dataset with select variables 
 
-to_label <- c("Ahmadabad", "Bangalore", "Chennai", "Delhi", "Gurgaon", "Hyderabad","Kochi", "Nagpur")
+to_label <- c("Ahmadabad", "Bangalore", "Chennai", "Delhi", "Gurgaon", "Hyderabad","Kochi", "Nagpur", "Mumbai")
 
 df2 <- df1 %>% 
   group_by(city, country) %>% 
@@ -157,8 +159,17 @@ ggplot(aes(mean_length, mean_realcost)) +
   labs(title = "Longer transit systems tend to cost more",
          subtitle = "<span style = 'color: purple'>**India**</span> has among the most transit systems in the world",
          x = "Average length",
-         y = "Average cost") +
-  theme(plot.subtitle = ggtext::element_markdown()) 
+         y = "Average cost",
+       caption = "Note the axes are on the log scale") +
+  theme(plot.subtitle = ggtext::element_markdown(size = 18),
+        plot.title = element_text(face = "bold", size = 20),
+        axis.title.x = element_text(face = "bold", size = 18),
+        axis.title.y = element_text(face = "bold", size = 18),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        plot.caption = element_text(size = 13, hjust = .75),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size = 16)) 
 
 ```
 
@@ -214,8 +225,18 @@ ggplot(aes(mean_length, mean_realcost)) +
   ) +
   labs(title = "Longer transit systems tend to cost more",
          x = "Average length",
-         y = "Average cost") +
-  theme(plot.subtitle = ggtext::element_markdown()) 
+         y = "Average cost",
+       caption = "Note the axes are on the log scale") +
+  theme(plot.subtitle = ggtext::element_markdown(),
+        plot.title = element_text(face = "bold", size = 20,
+                                  hjust = -.25),
+        axis.title.x = element_text(face = "bold", size = 18),
+        axis.title.y = element_text(face = "bold", size = 18),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        plot.caption = element_text(size = 13, hjust = .75),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size = 16))
   
 ```
 
